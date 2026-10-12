@@ -1,0 +1,13 @@
+services:
+  trainer:
+    build: .
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
+      - SDL_VIDEODRIVER=dummy
+    volumes:
+      - trainer-data:/app/data
+    command: python train.py --db /app/data/evolution.db --json-out /app/data/best_bird.json
+
+volumes:
+  trainer-data:
