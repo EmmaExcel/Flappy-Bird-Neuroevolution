@@ -157,6 +157,17 @@ def test_database_records(tmp_path="/tmp"):
         os.remove(db_file)
 
 
+def test_classic_ai_runner():
+    from play_classic import AIClassicFlappy
+    game = AIClassicFlappy("best_bird.json")
+    from src.entities import Player, Pipes, Score
+    game.player = Player(game.config)
+    game.pipes = Pipes(game.config)
+    game.score = Score(game.config)
+    decision = game.get_ai_decision()
+    assert isinstance(decision, (bool, np.bool_))
+
+
 if __name__ == "__main__":
     tests = [
         test_network_forward_shape,
@@ -173,6 +184,7 @@ if __name__ == "__main__":
         test_pipe_moving,
         test_storage_json,
         test_database_records,
+        test_classic_ai_runner,
     ]
 
     passed = 0

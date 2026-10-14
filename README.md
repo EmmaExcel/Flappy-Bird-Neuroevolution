@@ -79,6 +79,14 @@ Or load the champion recorded in the SQLite database:
 python main.py --play-champion
 ```
 
+### Classic Flappy Bird (FlapPyBird)
+
+Run the trained champion in the classic retro Flappy Bird game with authentic sprites and audio:
+
+```bash
+python play_classic.py
+```
+
 ### Benchmarks
 
 Run headless evaluation comparing different network layer topologies:
