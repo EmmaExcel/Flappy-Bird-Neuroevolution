@@ -49,15 +49,15 @@ class VectorizedPopulation:
     def get_individual_params(self, i):
         return np.concatenate([
             self.w1[i].flatten(),
-            self.b1[i].flatten(),
             self.w2[i].flatten(),
+            self.b1[i].flatten(),
             self.b2[i].flatten()
         ])
 
     def set_individual_params(self, i, params):
         self.w1[i] = params[0:32].reshape(4, 8)
-        self.b1[i] = params[32:40].reshape(1, 8)
-        self.w2[i] = params[40:48].reshape(8, 1)
+        self.w2[i] = params[32:40].reshape(8, 1)
+        self.b1[i] = params[40:48].reshape(1, 8)
         self.b2[i] = params[48:49].reshape(1, 1)
 
     def forward_batch(self, active, X):
@@ -120,6 +120,15 @@ def run_training():
 
     all_time_best_score = 0
     all_time_best_fit = 0.0
+    if args.resume and os.path.exists(args.resume):
+        try:
+            _, prev_info = load_model_json(args.resume)
+            all_time_best_score = prev_info.get("score", 0)
+            all_time_best_fit = prev_info.get("fitness", 0.0)
+            print(f"Loaded baseline champion: Score {all_time_best_score}, Fitness {all_time_best_fit:.0f}")
+        except Exception:
+            pass
+
     start_time = time.time()
 
     print(f"Goal: {args.gens} generations | Max Time: {format_duration(args.time_limit)} | Target File: {args.json_out}")
