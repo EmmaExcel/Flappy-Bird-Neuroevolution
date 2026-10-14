@@ -29,3 +29,4 @@ venv.bak/
 .DS_Store
 evolution.db
 results.json
+*.log
