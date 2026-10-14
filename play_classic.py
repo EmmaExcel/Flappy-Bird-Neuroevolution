@@ -20,7 +20,11 @@ from src.entities import PlayerMode
 class AIClassicFlappy(Flappy):
     def __init__(self, model_path=None):
         if model_path is None:
-            model_path = os.path.join(root_dir, "best_bird.json")
+            classic_target = os.path.join(root_dir, "best_classic.json")
+            if os.path.exists(classic_target):
+                model_path = classic_target
+            else:
+                model_path = os.path.join(root_dir, "best_bird.json")
         elif not os.path.isabs(model_path):
             candidate_root = os.path.join(root_dir, model_path)
             if os.path.exists(candidate_root):
@@ -30,7 +34,7 @@ class AIClassicFlappy(Flappy):
 
         super().__init__()
         self.network, self.model_info = load_model_json(model_path)
-        print(f"Loaded Champion: Gen {self.model_info.get('generation')}, Score {self.model_info.get('score')}")
+        print(f"Loaded Champion: Gen {self.model_info.get('generation')}, Score {self.model_info.get('score')} ({model_path})")
 
     async def splash(self):
         self.player.set_mode(PlayerMode.SHM)
@@ -50,24 +54,31 @@ class AIClassicFlappy(Flappy):
                 break
 
         if next_pipe is None:
-            gap_center_y = self.config.window.viewport_height * 0.5
-            dist_x = self.config.window.width
+            gap_center_y = 202.0
+            dist_x = 288.0
         else:
             gap_y = next_pipe.y + next_pipe.h
             gap_center_y = gap_y + (self.pipes.pipe_gap / 2.0)
             dist_x = next_pipe.x - self.player.x
 
-        vh = self.config.window.viewport_height
-        vw = self.config.window.width
-
-        inputs = [
-            self.player.y / vh,
-            self.player.vel_y / 10.0,
-            gap_center_y / vh,
-            dist_x / vw,
-            0.0,
-            0.77,
-        ]
+        if self.network.topology[0] == 4:
+            inputs = [
+                self.player.y / 404.0,
+                self.player.vel_y / 10.0,
+                gap_center_y / 404.0,
+                dist_x / 288.0,
+            ]
+        else:
+            vh = self.config.window.viewport_height
+            vw = self.config.window.width
+            inputs = [
+                self.player.y / vh,
+                self.player.vel_y / 10.0,
+                gap_center_y / vh,
+                dist_x / vw,
+                0.0,
+                0.77,
+            ]
 
         output = self.network.forward(inputs)
         return output[0] > 0.5
